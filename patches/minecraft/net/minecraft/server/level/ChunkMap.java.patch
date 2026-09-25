@@ -307,7 +307,7 @@
              boolean flag = d1 <= d2 && this.f_140472_.m_6459_(p_140498_);
 +
 +            // CraftBukkit start - respect vanish API
-+            if (!p_140498_.getBukkitEntity().canSee(this.f_140472_.getBukkitEntity())) {
++            if (flag && !p_140498_.getBukkitEntity().canSee(this.f_140472_.getBukkitEntity())) {
 +               flag = false;
 +            }
 +            // CraftBukkit end

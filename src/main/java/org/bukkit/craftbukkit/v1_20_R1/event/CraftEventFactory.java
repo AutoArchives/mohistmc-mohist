@@ -869,6 +869,7 @@ public class CraftEventFactory {
         return callEntityDeathEvent(victim, new java.util.ArrayList<>());
     }
 
+    public static int canDropExp = 0;
     public static Collection<ItemEntity> callEntityDeathEvent(LivingEntity victim, Collection<ItemEntity> captureDrops) {
         List<org.bukkit.inventory.ItemStack> drops;
         if (captureDrops == null) {
@@ -888,6 +889,7 @@ public class CraftEventFactory {
             ItemEntity itemEntity = new ItemEntity(world.getHandle(), loc.getX(), loc.getY(), loc.getZ(), CraftItemStack.asNMSCopy(stack));
             items.add(itemEntity);
         }
+        canDropExp = event.getDroppedExp();
         return items;
     }
 

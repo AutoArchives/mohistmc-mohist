@@ -79,12 +79,12 @@ public class ForgeConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfi
         this.childConfig = config;
         if (config != null && !isCorrect(config)) {
             String configName = config instanceof FileConfig ? ((FileConfig) config).getNioPath().toString() : config.toString();
-            LOGGER.warn(Logging.CORE, MohistMC.i18n.as("mohist.i18n.89", configName));
+            LOGGER.warn(Logging.CORE, MohistMC.getI18n().as("mohist.i18n.89", configName));
             correct(config,
                     (action, path, incorrectValue, correctedValue) ->
                             LOGGER.debug(Logging.CORE,"Incorrect key {} was corrected from {} to its default, {}. {}", DOT_JOINER.join( path ), incorrectValue, correctedValue, incorrectValue == correctedValue ? "This seems to be an error." : ""),
                     (action, path, incorrectValue, correctedValue) ->
-                            LOGGER.debug(Logging.CORE,MohistMC.i18n.as("mohist.i18n.90", DOT_JOINER.join( path ))));
+                            LOGGER.debug(Logging.CORE,MohistMC.getI18n().as("mohist.i18n.90", DOT_JOINER.join( path ))));
 
             if (config instanceof FileConfig) {
                 ((FileConfig) config).save();

@@ -242,9 +242,9 @@
 +      }
 +
 +      if (ServerAPI.yes_steve_model()) {
-+         System.exit(0);
++         System.exit(this.abnormalExit ? 70 : 0); // CraftBukkit // Paper
 +      } else {
-+         Runtime.getRuntime().halt(0);
++         Runtime.getRuntime().halt(this.abnormalExit ? 70 : 0); // CraftBukkit // Paper
 +      }
     }
  

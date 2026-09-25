@@ -51,6 +51,7 @@ public class MohistModuleManager {
 
     private static final MethodHandles.Lookup IMPL_LOOKUP;
     private static String MODULE_PATH = null;
+    public static MohistModuleManager INSTANCE = new MohistModuleManager();
 
     static {
         try {
@@ -67,41 +68,11 @@ public class MohistModuleManager {
         }
     }
 
-    public MohistModuleManager(List<String> args) {
-        this.applyLaunchArgs(args);
-        MohistConfigUtil.yml.set("mohist.installation-finished", false);
-        MohistConfigUtil.save();
-    }
-
-    public static void addExports(String module, String pkg, String target) {
-        if (target == null) {
-            target = "ALL-UNNAMED";
-        }
-
-        try {
-            addExports(List.of(module + "/" + pkg + "=" + target));
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-    }
-
     private static void addExports(List<String> exports) throws Throwable {
         MethodHandle implAddExportsMH = IMPL_LOOKUP.findVirtual(Module.class, "implAddExports", MethodType.methodType(void.class, String.class, Module.class));
         MethodHandle implAddExportsToAllUnnamedMH = IMPL_LOOKUP.findVirtual(Module.class, "implAddExportsToAllUnnamed", MethodType.methodType(void.class, String.class));
 
         addExtra(exports, implAddExportsMH, implAddExportsToAllUnnamedMH);
-    }
-
-    public static void addOpens(String module, String pkg, String target) {
-        if (target == null) {
-            target = "ALL-UNNAMED";
-        }
-
-        try {
-            addOpens(List.of(module + "/" + pkg + "=" + target));
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
     }
 
     private static void addOpens(List<String> opens) throws Throwable {
@@ -250,6 +221,14 @@ public class MohistModuleManager {
                 throw new RuntimeException(throwable);
             }
         }))));
+    }
+
+    private static volatile boolean initialized = false;
+
+    public void init(List<String> args) {
+        if (initialized) return;
+        initialized = true;
+        applyLaunchArgs(args);
     }
 
     private record ParserData(String module, String packages, String target) {

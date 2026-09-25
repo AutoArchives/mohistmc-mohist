@@ -65,7 +65,7 @@
     private PlayerList f_129763_;
     private volatile boolean f_129764_ = true;
     private boolean f_129765_;
-@@ -237,24 +_,44 @@
+@@ -237,24 +_,46 @@
     private final FrameTimer f_129735_ = new FrameTimer();
     private boolean f_129736_;
     private float f_129737_;
@@ -96,6 +96,8 @@
 +   private static final int SAMPLE_INTERVAL = 100;
 +   public final double[] recentTps = new double[3];
 +   // Spigot end
++
++   public volatile boolean abnormalExit = false; // Paper
 +
 +   public int rconPort;
 +

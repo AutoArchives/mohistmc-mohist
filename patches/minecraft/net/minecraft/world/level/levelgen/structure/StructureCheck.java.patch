@@ -1,0 +1,25 @@
+--- a/net/minecraft/world/level/levelgen/structure/StructureCheck.java
++++ b/net/minecraft/world/level/levelgen/structure/StructureCheck.java
+@@ -180,7 +_,11 @@
+       return i == -1 || p_226754_ && i != 0 ? StructureCheckResult.START_NOT_PRESENT : StructureCheckResult.START_PRESENT;
+    }
+ 
+-   public void m_197282_(ChunkPos p_197283_, Map<Structure, StructureStart> p_197284_) {
++   public synchronized void m_197282_(ChunkPos p_197283_, Map<Structure, StructureStart> p_197284_) {
++      if (p_197284_ == null) {
++         return;
++      }
++
+       long i = p_197283_.m_45588_();
+       Object2IntMap<Structure> object2intmap = new Object2IntOpenHashMap<>();
+       p_197284_.forEach((p_226749_, p_226750_) -> {
+@@ -193,6 +_,9 @@
+    }
+ 
+    private void m_197263_(long p_197264_, Object2IntMap<Structure> p_197265_) {
++      if (p_197265_ == null) {
++         return;
++      }
+       this.f_197247_.put(p_197264_, m_197298_(p_197265_));
+       this.f_197248_.values().forEach((p_209956_) -> {
+          p_209956_.remove(p_197264_);

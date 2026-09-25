@@ -283,15 +283,25 @@ public interface Registry<T extends Keyed> extends Iterable<T> {
         return (namespacedKey != null) ? get(namespacedKey) : null;
     }
 
+    default void reload() {
+
+    }
+
     static final class SimpleRegistry<T extends Enum<T> & Keyed> implements Registry<T> {
 
-        private final Map<NamespacedKey, T> map;
+        private Map<NamespacedKey, T> map;
+        private final Runnable reloadCallback;
 
         protected SimpleRegistry(@NotNull Class<T> type) {
             this(type, Predicates.<T>alwaysTrue());
         }
 
         protected SimpleRegistry(@NotNull Class<T> type, @NotNull Predicate<T> predicate) {
+            this.map = buildMap(type, predicate);
+            this.reloadCallback = () -> this.map = buildMap(type, predicate);
+        }
+
+        private ImmutableMap<NamespacedKey, T> buildMap(@NotNull Class<T> type, @NotNull Predicate<T> predicate) {
             ImmutableMap.Builder<NamespacedKey, T> builder = ImmutableMap.builder();
 
             for (T entry : type.getEnumConstants()) {
@@ -300,7 +310,12 @@ public interface Registry<T extends Keyed> extends Iterable<T> {
                 }
             }
 
-            map = builder.build();
+            return builder.build();
+        }
+
+        @Override
+        public void reload() {
+            this.reloadCallback.run();
         }
 
         @Nullable

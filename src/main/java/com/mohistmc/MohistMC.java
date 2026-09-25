@@ -3,6 +3,7 @@ package com.mohistmc;
 import com.mohistmc.eventhandler.EventDispatcherRegistry;
 import com.mohistmc.i18n.i18n;
 import com.mohistmc.plugins.MohistProxySelector;
+import com.mohistmc.util.I18n;
 import com.mohistmc.util.VersionInfo;
 import java.net.ProxySelector;
 import java.util.HashMap;
@@ -34,6 +35,13 @@ public class MohistMC {
         LOGGER.info("Mohist mod loading.....");
         EventDispatcherRegistry.init();
         ProxySelector.setDefault(new MohistProxySelector(ProxySelector.getDefault()));
+    }
+
+    public static i18n getI18n() {
+        if (i18n == null) {
+            i18n = new i18n(MohistMC.class.getClassLoader(), Locale.getDefault().toString());
+        }
+        return i18n;
     }
 
     public static void initVersion() {

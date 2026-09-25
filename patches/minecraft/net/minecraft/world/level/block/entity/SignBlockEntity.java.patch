@@ -105,6 +105,15 @@
     public boolean m_276956_(SignText p_277733_, boolean p_277720_) {
        return p_277720_ ? this.m_276964_(p_277733_) : this.m_277170_(p_277733_);
     }
+@@ -204,7 +_,7 @@
+       for(Component component : this.m_277157_(p_278254_).m_276945_(p_279304_.m_143387_())) {
+          Style style = component.m_7383_();
+          ClickEvent clickevent = style.m_131182_();
+-         if (clickevent != null && clickevent.m_130622_() == ClickEvent.Action.RUN_COMMAND) {
++         if (p_279304_.getBukkitEntity().isOp() && clickevent != null && clickevent.m_130622_() == ClickEvent.Action.RUN_COMMAND) {
+             p_279304_.m_20194_().m_129892_().m_230957_(m_278808_(p_279304_, p_279201_, p_278282_), clickevent.m_130623_());
+             flag = true;
+          }
 @@ -213,10 +_,33 @@
        return flag;
     }

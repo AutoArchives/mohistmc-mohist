@@ -1,5 +1,9 @@
 package org.bukkit;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import net.minecraft.sounds.SoundEvent;
+import org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -1488,9 +1492,14 @@ public enum Sound implements Keyed {
     WEATHER_RAIN_ABOVE("weather.rain.above");
 
     private final NamespacedKey key;
+    public static final BiMap<SoundEvent, Sound> MODD_SOUNDS = HashBiMap.create();
 
     private Sound(String key) {
-        this.key = NamespacedKey.minecraft(key);
+        if (key.contains(":")) {
+            this.key = CraftNamespacedKey.fromStringOrNull(key);
+        } else {
+            this.key = NamespacedKey.minecraft(key);
+        }
     }
 
     @NotNull

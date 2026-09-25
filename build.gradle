@@ -17,8 +17,8 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'de.undercouch.download' version '5.6.0'
-    id 'net.minecraftforge.gradle.patcher' version '[6.0.16,6.2)' apply false
-    id 'net.minecraftforge.gradle.mcp' version '[6.0.16,6.2)' apply false
+    id 'net.minecraftforge.gradle.patcher' version '[6.0.52,6.2)' apply false
+    id 'net.minecraftforge.gradle.mcp' version '[6.0.52,6.2)' apply false
 }
 
 init() //Init all our extension methods!
@@ -40,7 +40,7 @@ ext {
     MODLAUNCHER_VERSION = '10.0.9'
     SECUREJARHANDLER_VERSION = 'mohist-2.1.11'
     BOOTSTRAPLAUNCHER_VERSION = '1.1.2'
-    ASM_VERSION = '9.8'
+    ASM_VERSION = '9.9.1'
     INSTALLER_VERSION = '2.2.+'
     MIXIN_VERSION = '0.8.5'
     TERMINALCONSOLEAPPENDER_VERSION = '1.4.0'
@@ -109,7 +109,6 @@ subprojects {
     java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
     tasks.withType(JavaCompile).configureEach {
-        options.forkOptions.jvmArgs += "-Xmx4G"
         options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
         options.warnings = false // Shutup deprecated for removal warnings
     }
@@ -479,6 +478,9 @@ project(':mohist') {
         srgPatches = true
         accessTransformers.from file("$rootDir/src/main/resources/META-INF/accesstransformer.cfg")
         sideAnnotationStrippers.from file("$rootDir/src/main/resources/forge.sas")
+
+        mappings channel: MAPPING_CHANNEL, version: MAPPING_VERSION
+        mcVersion = MC_VERSION
 
         runs {
             forge_server {

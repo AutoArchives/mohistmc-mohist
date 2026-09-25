@@ -398,25 +398,30 @@
           BlockPos blockpos = this.m_143288_(this.m_46496_(i, 0, j, 15));
           if (this.m_46758_(blockpos)) {
              DifficultyInstance difficultyinstance = this.m_6436_(blockpos);
-@@ -412,7 +_,8 @@
+@@ -412,7 +_,9 @@
                    skeletonhorse.m_30923_(true);
                    skeletonhorse.m_146762_(0);
                    skeletonhorse.m_6034_((double)blockpos.m_123341_(), (double)blockpos.m_123342_(), (double)blockpos.m_123343_());
--                  this.m_7967_(skeletonhorse);
-+                  this.addFreshEntity(skeletonhorse, SpawnReason.LIGHTNING); // CraftBukkit
++                  skeletonhorse.spawnReason(SpawnReason.LIGHTNING); // CraftBukkit
+                   this.m_7967_(skeletonhorse);
 +
                 }
              }
  
-@@ -420,18 +_,21 @@
+@@ -420,6 +_,12 @@
              if (lightningbolt != null) {
                 lightningbolt.m_20219_(Vec3.m_82539_(blockpos));
                 lightningbolt.m_20874_(flag1);
--               this.m_7967_(lightningbolt);
-+               this.strikeLightning(lightningbolt, Cause.WEATHER); // CraftBukkit
++               LightningStrikeEvent lightning = CraftEventFactory.callLightningStrikeEvent((LightningStrike) lightningbolt.getBukkitEntity(), Cause.WEATHER);
++
++               if (lightning.isCancelled()) {
++                  return;
++               }
++
+                this.m_7967_(lightningbolt);
              }
           }
-       }
+@@ -427,11 +_,14 @@
  
        profilerfiller.m_6182_("iceandsnow");
        if (this.f_46441_.m_188503_(16) == 0) {

@@ -1292,9 +1292,14 @@ public class CraftWorld extends CraftRegionAccessor implements World {
 
     @Override
     public void setKeepSpawnInMemory(boolean keepLoaded) {
+        BlockPos chunkcoordinates = this.world.getSharedSpawnPos();
+        if (!getName().equals("world")) {
+            world.keepSpawnInMemory = false;
+            world.getChunkSource().removeRegionTicket(TicketType.START, new ChunkPos(chunkcoordinates), 11, Unit.INSTANCE);
+            return;
+        }
         world.keepSpawnInMemory = keepLoaded;
         // Grab the worlds spawn chunk
-        BlockPos chunkcoordinates = this.world.getSharedSpawnPos();
         if (keepLoaded) {
             world.getChunkSource().addRegionTicket(TicketType.START, new ChunkPos(chunkcoordinates), 11, Unit.INSTANCE);
         } else {

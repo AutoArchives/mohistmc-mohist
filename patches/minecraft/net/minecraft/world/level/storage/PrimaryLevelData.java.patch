@@ -15,15 +15,17 @@
  import java.util.HashSet;
  import java.util.Set;
  import java.util.UUID;
-@@ -17,6 +_,7 @@
+@@ -17,16 +_,21 @@
  import net.minecraft.SharedConstants;
  import net.minecraft.Util;
  import net.minecraft.core.BlockPos;
 +import net.minecraft.core.Registry;
  import net.minecraft.core.RegistryAccess;
  import net.minecraft.core.UUIDUtil;
++import net.minecraft.core.registries.Registries;
  import net.minecraft.nbt.CompoundTag;
-@@ -25,8 +_,11 @@
+ import net.minecraft.nbt.ListTag;
+ import net.minecraft.nbt.NbtOps;
  import net.minecraft.nbt.NbtUtils;
  import net.minecraft.nbt.StringTag;
  import net.minecraft.nbt.Tag;
@@ -35,12 +37,13 @@
  import net.minecraft.util.datafix.DataFixTypes;
  import net.minecraft.world.Difficulty;
  import net.minecraft.world.level.GameRules;
-@@ -35,11 +_,15 @@
+@@ -35,11 +_,16 @@
  import net.minecraft.world.level.LevelSettings;
  import net.minecraft.world.level.WorldDataConfiguration;
  import net.minecraft.world.level.border.WorldBorder;
 +import net.minecraft.world.level.dimension.LevelStem;
  import net.minecraft.world.level.dimension.end.EndDragonFight;
++import net.minecraft.world.level.levelgen.WorldDimensions;
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.WorldOptions;
  import net.minecraft.world.level.timers.TimerCallbacks;
@@ -83,6 +86,15 @@
     }
  
     public CompoundTag m_6626_(RegistryAccess p_78543_, @Nullable CompoundTag p_78544_) {
+@@ -156,7 +_,7 @@
+       p_78547_.m_128365_("Version", compoundtag);
+       NbtUtils.m_264171_(p_78547_);
+       DynamicOps<Tag> dynamicops = RegistryOps.m_255058_(NbtOps.f_128958_, p_78546_);
+-      WorldGenSettings.m_245563_(dynamicops, this.f_244409_, p_78546_).resultOrPartial(Util.m_137489_("WorldGenSettings: ", f_78442_::error)).ifPresent((p_78574_) -> {
++      WorldGenSettings.m_246823_(dynamicops, this.f_244409_, new WorldDimensions(this.customDimensions != null ? this.customDimensions : p_78546_.m_175515_(Registries.f_256862_))).resultOrPartial(Util.m_137489_("WorldGenSettings: ", f_78442_::error)).ifPresent((p_78574_) -> {
+          p_78547_.m_128365_("WorldGenSettings", p_78574_);
+       });
+       p_78547_.m_128405_("GameType", this.f_78443_.m_46929_().m_46392_());
 @@ -178,7 +_,7 @@
        p_78547_.m_128379_("allowCommands", this.f_78443_.m_46932_());
        p_78547_.m_128379_("initialized", this.f_78462_);

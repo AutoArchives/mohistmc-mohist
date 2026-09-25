@@ -1,12 +1,13 @@
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -1,8 +_,10 @@
+@@ -1,8 +_,11 @@
  package net.minecraft.world.entity.player;
  
 +import com.google.common.base.Function;
  import com.google.common.collect.ImmutableList;
  import com.google.common.collect.ImmutableMap;
  import com.google.common.collect.Lists;
++import com.mohistmc.paper.event.player.PrePlayerAttackEntityEvent;
 +import com.mohistmc.plugins.KeepInventory;
  import com.mojang.authlib.GameProfile;
  import com.mojang.datafixers.util.Either;
@@ -516,7 +517,7 @@
     protected Vec3 m_5763_(Vec3 p_36201_, MoverType p_36202_) {
        if (!this.f_36077_.f_35935_ && p_36201_.f_82480_ <= 0.0D && (p_36202_ == MoverType.SELF || p_36202_ == MoverType.PLAYER) && this.m_36343_() && this.m_36386_()) {
           double d0 = p_36201_.f_82479_;
-@@ -1047,11 +_,13 @@
+@@ -1047,12 +_,22 @@
        return p_36201_;
     }
  
@@ -527,10 +528,20 @@
     }
  
     public void m_5706_(Entity p_36347_) {
+-      if (p_36347_.m_6097_()) {
 +      if (!net.minecraftforge.common.ForgeHooks.onPlayerAttackTarget(this, p_36347_)) return;
-       if (p_36347_.m_6097_()) {
++      // Paper start - PlayerAttackEntityEvent
++      boolean willAttack = p_36347_.m_6097_() && !p_36347_.m_7313_(this); // Vanilla logic
++      PrePlayerAttackEntityEvent playerAttackEntityEvent = new PrePlayerAttackEntityEvent(
++              (org.bukkit.entity.Player) this.getBukkitEntity(),
++              p_36347_.getBukkitEntity(),
++              willAttack
++      );
++
++      if (playerAttackEntityEvent.callEvent() && willAttack) { // Logic moved to willAttack local variable.
           if (!p_36347_.m_7313_(this)) {
              float f = (float)this.m_21133_(Attributes.f_22281_);
+             float f1;
 @@ -1065,11 +_,10 @@
              float f2 = this.m_36403_(0.5F);
              f *= 0.2F + f2 * f2 * 0.8F;

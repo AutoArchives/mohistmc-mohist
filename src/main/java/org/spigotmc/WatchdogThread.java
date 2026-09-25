@@ -1,7 +1,12 @@
 package org.spigotmc;
 
 import com.mohistmc.MohistConfig;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.Entity;
 import org.bukkit.Bukkit;
 
 import java.lang.management.ManagementFactory;
@@ -19,6 +24,7 @@ public class WatchdogThread extends Thread {
     private boolean restart;
     private volatile long lastTick;
     private volatile boolean stopping;
+    public static boolean isWatching;
 
     private WatchdogThread(long timeoutTime, boolean restart) {
         super("Spigot Watchdog Thread");
@@ -55,6 +61,7 @@ public class WatchdogThread extends Thread {
     @Override
     public void run() {
         while (!stopping) {
+            MinecraftServer server = MinecraftServer.getServer();
             //
             if (lastTick != 0 && timeoutTime > 0 && monotonicMillis() > lastTick + timeoutTime) {
                 Logger log = Bukkit.getServer().getLogger();
@@ -73,12 +80,19 @@ public class WatchdogThread extends Thread {
                     dumpThread(thread, log);
                 }
                 log.log(Level.SEVERE, "------------------------------");
-                shutdown();
+                if ( !server.hasStopped() )
+                {
+                    // AsyncCatcher.enabled = false; // Disable async catcher incase it interferes with us
+                    // server.forceTicks = true;
+                    // try one last chance to safe shutdown on main incase it 'comes back'
+                    server.abnormalExit = true;
+                    server.halt(false);
+                }
                 break;
             }
 
             try {
-                sleep(10000);
+                sleep(1000);
             } catch (InterruptedException ex) {
                 interrupt();
             }

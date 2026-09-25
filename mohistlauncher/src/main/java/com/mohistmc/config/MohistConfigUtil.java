@@ -39,10 +39,6 @@ public class MohistConfigUtil {
         }
     }
 
-    public static boolean INSTALLATIONFINISHED() {
-        return !yml.getBoolean("mohist.installation-finished", false);
-    }
-
     public static boolean CHECK_UPDATE_AUTO_DOWNLOAD() {
         String key = "mohist.check_update_auto_download";
         if (yml.get(key) == null) {

@@ -18,6 +18,9 @@ public class CraftSound {
     }
 
     public static SoundEvent getSoundEffect(Sound s) {
+        if (Sound.MODD_SOUNDS.containsValue(s)) {
+            return Sound.MODD_SOUNDS.inverse().get(s);
+        }
         SoundEvent effect = BuiltInRegistries.SOUND_EVENT.get(CraftNamespacedKey.toMinecraft(s.getKey()));
         Preconditions.checkArgument(effect != null, "Sound effect %s does not exist", s);
 
@@ -25,6 +28,13 @@ public class CraftSound {
     }
 
     public static Sound getBukkit(SoundEvent soundEffect) {
+        if(soundEffect == null) {
+            return null;
+        }
+
+        if (Sound.MODD_SOUNDS.containsKey(soundEffect)) {
+            return Sound.MODD_SOUNDS.get(soundEffect);
+        }
         return Registry.SOUNDS.get(CraftNamespacedKey.fromMinecraft(BuiltInRegistries.SOUND_EVENT.getKey(soundEffect)));
     }
 }

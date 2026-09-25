@@ -182,7 +182,7 @@ public final class CraftItemStack extends ItemStack {
 
     @Override
     public int getMaxStackSize() {
-        return (handle == null) ? Material.AIR.getMaxStackSize() : handle.getItem().getMaxStackSize();
+        return (handle == null) ? Material.AIR.getMaxStackSize() : handle.getItem().getMaxStackSize(handle);
     }
 
     // Paper start
@@ -243,7 +243,7 @@ public final class CraftItemStack extends ItemStack {
         if (handle == null) {
             return 0;
         }
-        return EnchantmentHelper.getItemEnchantmentLevel(CraftEnchantment.getRaw(ench), handle);
+        return EnchantmentHelper.getTagEnchantmentLevel(CraftEnchantment.getRaw(ench), handle);
     }
 
     @Override

@@ -201,7 +201,7 @@ public class PacketDistributor<T> {
     private Consumer<Packet<?>> playerConsumer(final Supplier<ServerPlayer> entityPlayerMPSupplier) {
         return p -> {
             ServerPlayer entity = entityPlayerMPSupplier.get();
-            if (entity.connection != null && entity.connection.connection != null) {
+            if (entity != null && entity.connection != null && entity.connection.connection != null) {
                 entity.connection.connection.send(p);
             }
         };

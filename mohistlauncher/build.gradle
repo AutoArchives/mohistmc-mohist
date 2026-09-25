@@ -21,8 +21,6 @@ dependencies {
     implementation 'com.mohistmc:json:0.5'
     implementation 'com.mohistmc:tools:0.6'
     implementation "cpw.mods:bootstraplauncher:1.1.2"
-    implementation 'me.tongfei:progressbar:0.10.0'
-    implementation 'org.jline:jline:3.25.1'
 }
 
 shadowJar {
@@ -31,8 +29,6 @@ shadowJar {
         include(dependency('com.mohistmc:i18n'))
         include(dependency('com.mohistmc:json'))
         include(dependency('com.mohistmc:tools'))
-        include(dependency('me.tongfei:progressbar'))
-        include(dependency('org.jline:jline'))
     }
 }
 

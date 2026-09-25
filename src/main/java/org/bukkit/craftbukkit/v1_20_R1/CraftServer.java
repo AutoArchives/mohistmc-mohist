@@ -98,6 +98,7 @@ import net.minecraft.world.level.validation.ContentValidationException;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
@@ -1142,7 +1143,7 @@ public final class CraftServer implements Server {
         getServer().prepareLevels(internal.getChunkSource().chunkMap.progressListener, internal);
         internal.entityManager.tick(); // SPIGOT-6526: Load pending entities, so they are available to the API
 
-        pluginManager.callEvent(new WorldLoadEvent(internal.getWorld()));
+        MinecraftForge.EVENT_BUS.post(new LevelEvent.Load(internal));
         World world1 = internal.getWorld();
         world1.setBukkit(true);
         Level2LevelStem.reloadAndInit(world1);

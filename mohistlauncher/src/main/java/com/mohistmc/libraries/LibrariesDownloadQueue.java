@@ -20,28 +20,22 @@ package com.mohistmc.libraries;
 
 import com.mohistmc.MohistMCStart;
 import com.mohistmc.tools.SHA256;
-import java.io.BufferedReader;
+import com.mohistmc.util.ProgressBar;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import lombok.SneakyThrows;
 import lombok.ToString;
-import me.tongfei.progressbar.ProgressBar;
-import me.tongfei.progressbar.ProgressBarBuilder;
-import me.tongfei.progressbar.ProgressBarStyle;
 
 @ToString
 public class LibrariesDownloadQueue {
@@ -107,12 +101,7 @@ public class LibrariesDownloadQueue {
      */
     public void progressBar() {
         if (needDownload()) {
-            ProgressBarBuilder builder = new ProgressBarBuilder()
-                    .setTaskName("")
-                    .setStyle(ProgressBarStyle.ASCII)
-                    .setUpdateIntervalMillis(100)
-                    .setInitialMax(need_download.size());
-            try (ProgressBar pb = builder.build()) {
+            try (ProgressBar pb = new ProgressBar("", need_download.size())) {
                 for (Libraries lib : need_download) {
                     File file = new File(parentDirectory, lib.path);
                     file.getParentFile().mkdirs();

@@ -5,6 +5,7 @@ import com.mohistmc.config.MohistConfigUtil;
 import com.mohistmc.tools.FileUtils;
 import com.mohistmc.tools.JarTool;
 import com.mohistmc.tools.SHA256;
+import com.mohistmc.util.DataParser;
 import com.mohistmc.util.I18n;
 import com.mohistmc.util.MohistModuleManager;
 import java.io.File;
@@ -66,6 +67,7 @@ public class v_1_20_1 {
             copyFileFromJar(mohistplugin, "data/mohistplugins-" + mcVer + ".jar");
 
             if (!needsInstall()) return;
+            MohistModuleManager.INSTANCE.init(DataParser.launchArgs);
             System.out.println(I18n.as("installation.start"));
 
             copyFileFromJar(universalJar, "data/forge-" + mcVer + "-" + forgeVer + "-universal.jar");
@@ -172,9 +174,6 @@ public class v_1_20_1 {
             fw.close();
 
             System.out.println(I18n.as("installation.finished"));
-            MohistConfigUtil.yml.set("mohist.installation-finished", true);
-            MohistConfigUtil.save();
-            JarTool.restartServer(launchArgs, true);
         }
 
         protected void libPath() throws Exception {

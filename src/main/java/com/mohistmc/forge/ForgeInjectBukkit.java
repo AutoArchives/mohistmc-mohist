@@ -7,6 +7,7 @@ import com.mohistmc.MohistMC;
 import com.mohistmc.api.ServerAPI;
 import com.mohistmc.bukkit.entity.MohistModsEntity;
 import com.mohistmc.dynamicenum.MohistDynamEnum;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.StatType;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.effect.MobEffect;
@@ -50,6 +52,7 @@ import org.bukkit.Fluid;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.World;
 import org.bukkit.WorldType;
@@ -87,7 +90,7 @@ public class ForgeInjectBukkit {
                     .build());
 
     public static Map<Villager.Profession, ResourceLocation> profession = new HashMap<>();
-    public static Map<org.bukkit.attribute.Attribute, ResourceLocation> attributemap = new HashMap<>();
+    public static Map<ResourceLocation, org.bukkit.attribute.Attribute> attributemap = new HashMap<>();
     public static Map<StatType<?>, Statistic> statisticMap = new HashMap<>();
     public static Map<net.minecraft.world.level.biome.Biome, Biome> biomeBiomeMap = new HashMap<>();
     public static Map<MobCategory, SpawnCategory> spawnCategoryMap = new HashMap<>();
@@ -109,6 +112,9 @@ public class ForgeInjectBukkit {
         addEnumEnvironment();
         loadSpawnCategory();
         addPose();
+        addEnumAttribute();
+        addModSound();
+        reloadBukkitRegistries();
     }
 
 
@@ -120,7 +126,7 @@ public class ForgeInjectBukkit {
                 // inject item materials into Bukkit for FML
                 String materialName = normalizeName(resourceLocation.toString());
                 int id = Item.getId(item);
-                Material material = Material.addMaterial(materialName, id, item.getMaxStackSize(new ItemStack(item)), false, true, resourceLocation);
+                Material material = Material.addMaterial(materialName, id, item.getMaxStackSize(item.getDefaultInstance()), false, true, resourceLocation);
 
                 CraftMagicNumbers.ITEM_MATERIAL.put(item, material);
                 CraftMagicNumbers.MATERIAL_ITEM.put(material, item);
@@ -139,7 +145,7 @@ public class ForgeInjectBukkit {
                 String materialName = normalizeName(resourceLocation.toString());
                 int id = Item.getId(block.asItem());
                 Item item = Item.byId(id);
-                Material material = Material.addMaterial(materialName, id, item.getMaxStackSize(new ItemStack(item)), true, false, resourceLocation);
+                Material material = Material.addMaterial(materialName, id, item.getMaxStackSize(item.getDefaultInstance()), true, false, resourceLocation);
 
                 if (material != null) {
                     CraftMagicNumbers.BLOCK_MATERIAL.put(block, material);
@@ -302,9 +308,11 @@ public class ForgeInjectBukkit {
             ResourceLocation resourceLocation = registry.getKey(attribute);
             if (isMods(resourceLocation)) {
                 String name = normalizeName(resourceLocation.getPath());
-                org.bukkit.attribute.Attribute ab = MohistDynamEnum.addEnum(org.bukkit.attribute.Attribute.class, name, List.of(String.class), List.of());
-                attributemap.put(ab, resourceLocation);
-                MohistMC.LOGGER.debug("Registered forge Attribute as Attribute(Bukkit) {}", ab.name());
+                org.bukkit.attribute.Attribute ab = MohistDynamEnum.addEnum(org.bukkit.attribute.Attribute.class, name, List.of(String.class), List.of(resourceLocation.toString()));
+                if (ab != null) {
+                    attributemap.put(resourceLocation, ab);
+                    MohistMC.LOGGER.debug("Registered forge Attribute as Attribute(Bukkit) {}", ab.name());
+                }
             }
         }
     }
@@ -377,6 +385,19 @@ public class ForgeInjectBukkit {
         }
     }
 
+    public static void addModSound() {
+        var registry = ForgeRegistries.SOUND_EVENTS;
+        for (SoundEvent statType : registry) {
+            ResourceLocation resourceLocation = registry.getKey(statType);
+            if (isMods(resourceLocation)) {
+                String name = resourceLocation.getPath().replace(".", "_").toUpperCase(Locale.ROOT);
+                Sound sound = MohistDynamEnum.addEnum(Sound.class, name, List.of(String.class), List.of(resourceLocation.toString()));
+                Sound.MODD_SOUNDS.put(statType, sound);
+                MohistMC.LOGGER.debug("Registered mods SoundEvent as Sound(Bukkit) {}", sound.name());
+            }
+        }
+    }
+
     public static String normalizeName(String name) {
         return name.replace(':', '_')
                 .replaceAll("\\s+", "_")
@@ -390,5 +411,16 @@ public class ForgeInjectBukkit {
 
     public static boolean isMods(NamespacedKey namespacedkey) {
         return !namespacedkey.getNamespace().equals(NamespacedKey.MINECRAFT);
+    }
+
+    public static void reloadBukkitRegistries() {
+        try {
+            for (var field : org.bukkit.Registry.class.getFields()) {
+                if (Modifier.isStatic(field.getModifiers()) && field.get(null) instanceof org.bukkit.Registry.SimpleRegistry<?> registry) {
+                    registry.reload();
+                }
+            }
+        } catch (Throwable ignored) {
+        }
     }
 }

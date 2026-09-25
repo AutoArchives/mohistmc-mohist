@@ -117,7 +117,7 @@
     private LivingEntity f_20951_;
     private int f_20952_;
     private float f_20953_;
-@@ -226,10 +_,36 @@
+@@ -226,10 +_,37 @@
     private float f_20932_;
     protected Brain<?> f_20939_;
     private boolean f_217034_;
@@ -150,18 +150,18 @@
     protected LivingEntity(EntityType<? extends LivingEntity> p_20966_, Level p_20967_) {
        super(p_20966_, p_20967_);
        this.f_20943_ = new AttributeMap(DefaultAttributes.m_22297_(p_20966_));
++      this.craftAttributes = new CraftAttributeMap(f_20943_); // CraftBukkit
 +      this.fake$setHealth(true);
        this.m_21153_(this.m_21233_());
        this.f_19850_ = true;
        this.f_20928_ = (float)((Math.random() + 1.0D) * (double)0.01F);
-@@ -239,7 +_,9 @@
+@@ -239,7 +_,8 @@
        this.f_20885_ = this.m_146908_();
        this.m_274367_(0.6F);
        NbtOps nbtops = NbtOps.f_128958_;
 -      this.f_20939_ = this.m_8075_(new Dynamic<>(nbtops, nbtops.createMap(ImmutableMap.of(nbtops.createString("memories"), nbtops.emptyMap()))));
 +      var dyn = new Dynamic<>(nbtops, nbtops.createMap(ImmutableMap.of(nbtops.createString("memories"), nbtops.emptyMap())));
 +      this.f_20939_ = net.minecraftforge.common.ForgeHooks.onLivingMakeBrain(this, this.m_8075_(dyn), dyn);
-+      this.craftAttributes = new CraftAttributeMap(f_20943_); // CraftBukkit
     }
  
     public Brain<?> m_6274_() {
@@ -539,7 +539,7 @@
     protected void m_142540_(MobEffectInstance p_147190_, @Nullable Entity p_147191_) {
        this.f_20948_ = true;
        if (!this.m_9236_().f_46443_) {
-@@ -1015,19 +_,67 @@
+@@ -1015,19 +_,60 @@
  
     }
  
@@ -592,15 +592,8 @@
 +      // CraftBukkit start - Handle scaled health
 +      if (this instanceof ServerPlayer serverPlayer && !fake$setHealth.getAndSet(false) && serverPlayer.initialized) {
 +         org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer player = serverPlayer.getBukkitEntity();
-+         // Squeeze
-+         if (p_21154_ < 0.0F) {
-+            player.setRealHealth(0.0D);
-+         } else if (p_21154_ > player.getMaxHealth()) {
-+            player.setRealHealth(player.getMaxHealth());
-+         } else {
-+            player.setRealHealth(p_21154_);
-+         }
-+
++         double realHealth = Mth.m_14008_(p_21154_, 0.0F, player.getMaxHealth());
++         player.setRealHealth(realHealth);
 +         player.updateScaledHealth(false);
 +         return;
 +      }
@@ -665,7 +658,7 @@
           }
  
           if (p_21016_.m_269533_(DamageTypeTags.f_268419_) && this.m_6095_().m_204039_(EntityTypeTags.f_144295_)) {
-@@ -1074,23 +_,39 @@
+@@ -1074,23 +_,41 @@
  
           this.f_267362_.m_267771_(1.5F);
           boolean flag1 = true;
@@ -676,6 +669,7 @@
              }
  
 +            // CraftBukkit start
++            this.canDamage.set(true);
              this.m_6475_(p_21016_, p_21017_ - this.f_20898_);
 +            if (!this.canDamage()) {
 +               return false;
@@ -687,6 +681,7 @@
 -            this.f_20898_ = p_21017_;
 -            this.f_19802_ = 20;
 +            // CraftBukkit start
++            this.canDamage.set(true);
              this.m_6475_(p_21016_, p_21017_);
 +            if (!this.canDamage()) {
 +               return false;
@@ -854,16 +849,21 @@
  
        boolean flag = this.f_20889_ > 0;
        if (this.m_6125_() && this.m_9236_().m_46469_().m_46207_(GameRules.f_46135_)) {
-@@ -1350,6 +_,14 @@
+@@ -1349,7 +_,18 @@
+       }
  
        this.m_5907_();
-       this.m_21226_();
+-      this.m_21226_();
 +
 +      Collection<ItemEntity> drops = captureDrops(null);
 +      EmeraldClose.init(this, drops); // Mohist
 +       if (!(this instanceof ServerPlayer)){
 +           drops = CraftEventFactory.callEntityDeathEvent(this, drops);
 +       }
++      if (CraftEventFactory.canDropExp != 0) {
++         this.m_21226_();
++         CraftEventFactory.canDropExp = 0;
++      }
 +      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, f_20889_ > 0))
 +         drops.forEach(e -> m_9236_().m_7967_(e));
     }
@@ -1840,7 +1840,7 @@
 +            // now revert and call event if the teleport place is valid
 +            this.m_6034_(d0, d1, d2);
 +
-+            if (flag1) {
++            if (flag) {
 +               if (!(this instanceof ServerPlayer)) {
 +                  EntityTeleportEvent teleport = new EntityTeleportEvent(this.getBukkitEntity(), new Location(this.f_19853_.getWorld(), d0, d1, d2), new Location(this.f_19853_.getWorld(), p_20985_, d3, p_20987_));
 +                  this.f_19853_.getCraftServer().getPluginManager().callEvent(teleport);

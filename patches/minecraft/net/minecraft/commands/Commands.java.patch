@@ -27,7 +27,7 @@
  import net.minecraft.ChatFormatting;
  import net.minecraft.SharedConstants;
  import net.minecraft.Util;
-@@ -118,6 +_,9 @@
+@@ -118,7 +_,11 @@
  import net.minecraft.server.level.ServerPlayer;
  import net.minecraft.tags.TagKey;
  import net.minecraft.util.profiling.jfr.JvmProfiler;
@@ -35,8 +35,10 @@
 +import org.bukkit.event.player.PlayerCommandSendEvent;
 +import org.bukkit.event.server.ServerCommandEvent;
  import org.slf4j.Logger;
++import org.spigotmc.AsyncCatcher;
  
  public class Commands {
+    private static final Logger f_82089_ = LogUtils.getLogger();
 @@ -193,7 +_,7 @@
           JfrCommand.m_183645_(this.f_82090_);
        }
@@ -128,7 +130,7 @@
        CommandSourceStack commandsourcestack = p_242844_.getContext().getSource();
        commandsourcestack.m_81377_().m_129905_().m_6521_(() -> {
           return "/" + p_242841_;
-@@ -243,29 +_,53 @@
+@@ -243,29 +_,55 @@
  
        try {
           try {
@@ -193,11 +195,13 @@
 +                  builder.append(net.kyori.adventure.text.Component.newline()).append(LegacyComponentSerializer.legacySection().deserialize(CraftChatMessage.fromComponent(mutablecomponent1)));
 +               }
 +            }
-+            org.bukkit.event.command.UnknownCommandEvent event = new org.bukkit.event.command.UnknownCommandEvent(commandsourcestack.getBukkitSender(), p_242841_, org.spigotmc.SpigotConfig.unknownCommandMessage.isEmpty() ? null : builder.build());
-+            org.bukkit.Bukkit.getServer().getPluginManager().callEvent(event);
-+            if (event.message() != null) {
-+               commandsourcestack.sendFailure(PaperAdventure.asVanilla(event.message()), false);
-+               // Paper end
++            if (!AsyncCatcher.catchAsync()) {
++               org.bukkit.event.command.UnknownCommandEvent event = new org.bukkit.event.command.UnknownCommandEvent(commandsourcestack.getBukkitSender(), p_242841_, org.spigotmc.SpigotConfig.unknownCommandMessage.isEmpty() ? null : builder.build());
++               org.bukkit.Bukkit.getServer().getPluginManager().callEvent(event);
++               if (event.message() != null) {
++                  commandsourcestack.sendFailure(PaperAdventure.asVanilla(event.message()), false);
++                  // Paper end
++               }
              }
           } catch (Exception exception) {
              MutableComponent mutablecomponent = Component.m_237113_(exception.getMessage() == null ? exception.getClass().getName() : exception.getMessage());

@@ -56,15 +56,14 @@
        if (this.f_35366_) {
           this.f_35366_ = false;
        }
-@@ -220,7 +_,7 @@
+@@ -220,6 +_,7 @@
                 this.f_35374_ = false;
              }
  
--            this.m_7292_(new MobEffectInstance(MobEffects.f_19605_, 200, 0));
-+            this.addEffect(new MobEffectInstance(MobEffects.f_19605_, 200, 0), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.VILLAGER_TRADE); // CraftBukkit
++            this.pushEffectCause(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.VILLAGER_TRADE); // CraftBukkit
+             this.m_7292_(new MobEffectInstance(MobEffects.f_19605_, 200, 0));
           }
        }
- 
 @@ -245,6 +_,9 @@
     }
  
