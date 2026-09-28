@@ -201,7 +201,9 @@
 +
 +               if (event.getResult() != Result.DENY) {
 +                  for (Entry<Integer, ItemStack> dslot : draggedSlots.entrySet()) {
-+                     view.setItem(dslot.getKey(), CraftItemStack.asBukkitCopy(dslot.getValue()));
++                     // Mohist start - keep the raw NMS stack, asBukkitCopy() rebuilds it from ItemMeta and drops every tag ItemMeta does not know (display.color on Forge items)
++                     view.setItem(dslot.getKey(), CraftItemStack.asCraftMirror(dslot.getValue()));
++                     // Mohist end
 +                  }
 +                  // The only time the carried item will be set to null is if the inventory is closed by the server.
 +                  // If the inventory is closed by the server, then the cursor items are dropped.  This is why we change the cursor early.
