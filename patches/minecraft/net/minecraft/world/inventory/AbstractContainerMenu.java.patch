@@ -164,7 +164,7 @@
                 for(Slot slot1 : this.f_38847_) {
                    ItemStack itemstack1 = this.m_142621_();
                    if (slot1 != null && m_38899_(slot1, itemstack1, true) && slot1.m_5857_(itemstack1) && (this.f_38845_ == 2 || itemstack1.m_41613_() >= this.f_38847_.size()) && this.m_5622_(slot1)) {
-@@ -354,12 +_,49 @@
+@@ -354,12 +_,51 @@
                       int k = Math.min(itemstack2.m_41741_(), slot1.m_5866_(itemstack2));
                       int l = Math.min(m_278794_(this.f_38847_, this.f_38845_, itemstack2) + j, k);
                       k1 -= l - j;
