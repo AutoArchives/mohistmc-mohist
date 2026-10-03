@@ -18,12 +18,20 @@
     }
  
     public void m_5797_(ClientLoginPacketListener p_134754_) {
-@@ -48,4 +_,8 @@
+@@ -47,5 +_,16 @@
+ 
     public FriendlyByteBuf m_179812_() {
        return this.f_134747_;
-    }
++   }
 +
 +   @Override public int getIndex() { return m_134755_(); }
 +   @Override public ResourceLocation getName() { return m_179811_(); }
-+   @org.jetbrains.annotations.Nullable @Override public FriendlyByteBuf getInternalData() { return m_179812_(); }
++   @Override public FriendlyByteBuf getInternalData() {
++      // Create a heap copy to pass off to other consumers because we could be reading from a pooled buffer that never gets released.
++      // Using a heap buffer means that it will be released when the GC determines its free.
++      // See: https://github.com/MinecraftForge/MinecraftForge/issues/10861
++      var heapCopy = io.netty.buffer.Unpooled.buffer(this.f_134747_.readableBytes());
++      heapCopy.writeBytes(this.f_134747_.slice()); // We use a slice to not mess with the reader index, just in case someone else wants to touch the buffer later
++      return new FriendlyByteBuf(heapCopy);
+    }
  }
